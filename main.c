@@ -7,7 +7,7 @@ int main(){
     size_t i;
     size_t len;
     char c;
-    BUFFERLINE *pLine = bm_flnew(DEFAULT_BUFFERSIZE, 10);
+    BUFFERLINE *pLine = bm_flnew();
     if(pLine == NULL){
         printf("Error!");
         exit(-1);
@@ -22,6 +22,14 @@ int main(){
     
     bm_flinsert(pLine, "Busang", 5);
     bm_fldump(pLine);
+
+    bm_flinsert(pLine, "O", 0);
+    bm_fldump(pLine);
+
+    bm_flinsert(pLine, "PPP", 0);
+    bm_fldump(pLine);
+
+    printf("Hello\n");
 
     i = 0;
     len = bm_fllen(pLine);
