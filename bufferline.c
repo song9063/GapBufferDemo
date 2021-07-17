@@ -15,7 +15,7 @@ References:
 BUFFERLINE *bm_flnew(void){
     BUFFERLINE *pLine = (BUFFERLINE*)malloc(sizeof(BUFFERLINE));
     if(pLine == NULL) return NULL;
-    pLine->buffer = (char*)malloc(1);
+    pLine->buffer = (wchar_t*)malloc(1);
     pLine->gap_size = 1;
     pLine->gap_left = 0;
     pLine->gap_right = pLine->gap_size - pLine->gap_left-1;
@@ -33,10 +33,10 @@ void bm_flfree(BUFFERLINE *pLine){
 }
 int bm_flgrowbuf(BUFFERLINE *pLine){
     size_t i;
-    char *buffCopy;
+    wchar_t *buffCopy;
     buffCopy = pLine->buffer;
     printf("Add buffer space %ld -> %ld", pLine->size, pLine->size+BUFFER_GROWING_SIZE);
-    pLine->buffer = (char *)realloc(pLine->buffer, BUFFER_GROWING_SIZE * sizeof(char));
+    pLine->buffer = (wchar_t *)realloc(pLine->buffer, BUFFER_GROWING_SIZE * sizeof(wchar_t));
     if(pLine->buffer == NULL){
         free(buffCopy);
         /*bm_flfree(pLine);*/
@@ -50,7 +50,7 @@ int bm_flgrowbuf(BUFFERLINE *pLine){
 }
 int bm_flgrowgap(BUFFERLINE *pLine, size_t pos){
     size_t i;
-    char tmp[pLine->size];
+    wchar_t tmp[pLine->size];
     for(i=pos; i<pLine->size; i++)
         tmp[i-pos] = pLine->buffer[i];
 
@@ -67,7 +67,7 @@ int bm_flgrowgap(BUFFERLINE *pLine, size_t pos){
 }
 void bm_fldump(BUFFERLINE *pLine){
     size_t i;
-    char c;
+    wchar_t c;
     i = bm_fllen(pLine);
     printf("\n\nLen: %ld, Size: %ld, Gap Size:%ld, Left: %ld, Right: %ld\n > ",
         i, pLine->size, pLine->gap_size, pLine->gap_left, pLine->gap_right);
@@ -80,7 +80,7 @@ void bm_fldump(BUFFERLINE *pLine){
 
 size_t bm_fllen(BUFFERLINE *pLine){
     size_t len = 0;
-    char c;
+    wchar_t c;
     size_t i = 0;
     while(i < pLine->size){
         c = pLine->buffer[i];
@@ -122,11 +122,11 @@ void bm_flmv(BUFFERLINE *pLine, size_t pos){
         bm_flmvr(pLine, pos);
 }
 
-int bm_flinsert(BUFFERLINE *pLine, char *sz_in, size_t pos){
+int bm_flinsert(BUFFERLINE *pLine, wchar_t *sz_in, size_t pos){
     size_t len;
     size_t i;
     if(sz_in == NULL) return FALSE;
-    len=strlen(sz_in);
+    len=wcslen(sz_in);
     i=0;
 
     if(pos != pLine->gap_left)
@@ -150,7 +150,7 @@ int bm_flinsert(BUFFERLINE *pLine, char *sz_in, size_t pos){
     return TRUE;
 }
 
-char bm_flgetc(BUFFERLINE *pLine, size_t pos){
+wchar_t bm_flgetc(BUFFERLINE *pLine, size_t pos){
     size_t len;
     if(pos < 0)
         return 0x00;

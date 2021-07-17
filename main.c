@@ -17,16 +17,16 @@ int main(){
 
     bm_fldump(pLine);
 
-    bm_flinsert(pLine, "Hello", 0);
+    bm_flinsert(pLine, L"Hello", 0);
     bm_fldump(pLine);
     
-    bm_flinsert(pLine, "Busang", 5);
+    bm_flinsert(pLine, L"Busang", 5);
     bm_fldump(pLine);
 
-    bm_flinsert(pLine, "O", 0);
+    bm_flinsert(pLine, L"O", 0);
     bm_fldump(pLine);
 
-    bm_flinsert(pLine, "PPP", 0);
+    bm_flinsert(pLine, L"PPP", 0);
     bm_fldump(pLine);
 
     printf("Hello\n");
