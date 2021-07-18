@@ -51,16 +51,14 @@ void bm_flfree(BUFFERLINE *pLine){
 int bm_flgrowbuf(BUFFERLINE *pLine){
     size_t i;
     wchar_t *btmp;
-    printf("\n\nAdd buffer space %ld -> %ld\n\n", pLine->size, pLine->size+BUFFER_GROWING_SIZE);
     btmp = (wchar_t *)realloc(pLine->buffer, (BUFFER_GROWING_SIZE * sizeof(wchar_t)) + (sizeof(wchar_t) * pLine->size));
     if(btmp == NULL){
         return FALSE;
     }
     pLine->buffer = btmp;
-    for(i=pLine->size; i<pLine->size + BUFFER_GROWING_SIZE; i++){
+    for(i=pLine->size; i<pLine->size + BUFFER_GROWING_SIZE; i++)
         pLine->buffer[i] = 0x00;
-        printf("C %ld,", i);
-    }
+    
     pLine->size += BUFFER_GROWING_SIZE;
     return TRUE;
 }
@@ -71,7 +69,7 @@ int bm_flgrowgap(BUFFERLINE *pLine, size_t pos){
         tmp[i-pos] = bm_flgetc(pLine, i);
 
     for(i=0; i<GAP_GROWING_SIZE; i++)
-        pLine->buffer[i+pos] = 0x00; /* [pos:2,gsize:4] = L=2, R=5 */
+        pLine->buffer[i+pos] = 0x00;
 
     for(i=0; i<wcslen(tmp); i++)
         pLine->buffer[i+pos+GAP_GROWING_SIZE] = tmp[i];
