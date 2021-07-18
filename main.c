@@ -5,8 +5,6 @@
 
 int main(){
     size_t i;
-    size_t len;
-    char c;
     BUFFERLINE *pLine = bm_flnew();
     if(pLine == NULL){
         printf("Error!");
@@ -32,18 +30,19 @@ int main(){
     bm_flinsert(pLine, L"Song", 17);
     bm_fldump(pLine);
 
-    printf("Hello\n");
+    bm_flprint(pLine);
 
-    i = 0;
-    len = bm_fllen(pLine);
-    while(i<len){
-        c = bm_flgetc(pLine, i);
-        if(c == 0x00)
-            break;
-        printf("\tCharacter at %ld: %c\n", i, c);
-        i++;
+    printf("\n\n\nMove!\n");
+    for(i=0; i<3; i++){
+        bm_flmv(pLine, i);
+        bm_fldump(pLine);
     }
 
+    printf("\n\n\nMove to end!\n");
+    i = bm_fllen(pLine);
+    bm_flmv(pLine, i);
+    bm_fldump(pLine);
+    
     bm_flfree(pLine);
     return 0;
 }

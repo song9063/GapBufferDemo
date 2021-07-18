@@ -52,5 +52,6 @@ wchar_t bm_flgetc(BUFFERLINE *pLine, size_t pos);
 
 /* Dump buffer for debug */
 void bm_fldump(BUFFERLINE *pLine);
+void bm_flprint(BUFFERLINE *pLine);
 
 #endif

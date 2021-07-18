@@ -79,18 +79,6 @@ int bm_flgrowgap(BUFFERLINE *pLine, size_t pos){
 
     return TRUE;
 }
-void bm_fldump(BUFFERLINE *pLine){
-    size_t i;
-    wchar_t c;
-    i = bm_fllen(pLine);
-    printf("\n\nLen: %ld, Size: %ld, Gap Size:%ld, Left: %ld, Right: %ld\n > ",
-        i, pLine->size, pLine->gap_size, pLine->gap_left, pLine->gap_right);
-    for(i=0; i<pLine->size; i++){
-        c = pLine->buffer[i];
-        putchar(c == 0x00 ? '_' : c);
-    }
-    putchar('\n');
-}
 
 size_t bm_fllen(BUFFERLINE *pLine){
     size_t len = 0;
@@ -178,4 +166,32 @@ wchar_t bm_flgetc(BUFFERLINE *pLine, size_t pos){
         return 0x00;
 
     return pLine->buffer[pos];
+}
+
+void bm_fldump(BUFFERLINE *pLine){
+    size_t i;
+    wchar_t c;
+    i = bm_fllen(pLine);
+    printf("\n\nLen: %ld, Size: %ld, Gap Size:%ld, Left: %ld, Right: %ld\n > ",
+        i, pLine->size, pLine->gap_size, pLine->gap_left, pLine->gap_right);
+    for(i=0; i<pLine->size; i++){
+        c = pLine->buffer[i];
+        putchar(c == 0x00 ? '_' : c);
+    }
+    putchar('\n');
+}
+
+void bm_flprint(BUFFERLINE *pLine){
+    size_t i, len;
+    wchar_t c;
+    i = 0;
+    len = bm_fllen(pLine);
+    while(i<len){
+        c = bm_flgetc(pLine, i);
+        if(c == 0x00)
+            break;
+        putchar(c);
+        i++;
+    }
+    putchar('\n');
 }
