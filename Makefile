@@ -5,7 +5,7 @@ PROGRAM=buff
 
 SRC=main.c bufferline.c
 
-HDR=bufferline.h
+HDR=bufferline.h bdef.h
 
 OBJ=main.o bufferline.o
 

@@ -41,7 +41,7 @@ void bm_flmv(BUFFERLINE *pLine, size_t pos);
 
 
 /* Insert text to gap buffer */
-int bm_flinsert(BUFFERLINE *pLine, wchar_t *sz_in, size_t pos);
+int bm_flinsert(BUFFERLINE *pLine, wchar_t *sz_in, const size_t pos);
 
 /* Retrive character at */
 wchar_t bm_flgetc(BUFFERLINE *pLine, size_t pos);

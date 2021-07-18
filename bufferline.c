@@ -15,11 +15,13 @@ References:
 BUFFERLINE *bm_flnew(void){
     BUFFERLINE *pLine = (BUFFERLINE*)malloc(sizeof(BUFFERLINE));
     if(pLine == NULL) return NULL;
-    pLine->buffer = (wchar_t*)malloc(1);
-    pLine->gap_size = 1;
+    pLine->buffer = (wchar_t*)malloc(2 * sizeof(wchar_t));
+    pLine->buffer[0] = 0x00;
+    pLine->buffer[1] = 0x00;
+    pLine->gap_size = 2;
     pLine->gap_left = 0;
-    pLine->gap_right = pLine->gap_size - pLine->gap_left-1;
-    pLine->size = 1;
+    pLine->gap_right = 1;
+    pLine->size = 2;
     
     return pLine;
 }
@@ -33,35 +35,34 @@ void bm_flfree(BUFFERLINE *pLine){
 }
 int bm_flgrowbuf(BUFFERLINE *pLine){
     size_t i;
-    wchar_t *buffCopy;
-    buffCopy = pLine->buffer;
-    printf("Add buffer space %ld -> %ld", pLine->size, pLine->size+BUFFER_GROWING_SIZE);
-    pLine->buffer = (wchar_t *)realloc(pLine->buffer, BUFFER_GROWING_SIZE * sizeof(wchar_t));
-    if(pLine->buffer == NULL){
-        free(buffCopy);
-        /*bm_flfree(pLine);*/
-        return FALSE;            
+    wchar_t *btmp;
+    printf("\n\nAdd buffer space %ld -> %ld\n\n", pLine->size, pLine->size+BUFFER_GROWING_SIZE);
+    btmp = (wchar_t *)realloc(pLine->buffer, (BUFFER_GROWING_SIZE * sizeof(wchar_t)) + (sizeof(wchar_t) * pLine->size));
+    if(btmp == NULL){
+        return FALSE;
     }
+    pLine->buffer = btmp;
     for(i=pLine->size; i<pLine->size + BUFFER_GROWING_SIZE; i++){
         pLine->buffer[i] = 0x00;
+        printf("C %ld,", i);
     }
     pLine->size += BUFFER_GROWING_SIZE;
     return TRUE;
 }
 int bm_flgrowgap(BUFFERLINE *pLine, size_t pos){
     size_t i;
-    wchar_t tmp[pLine->size];
+    wchar_t tmp[pLine->size - pos];
     for(i=pos; i<pLine->size; i++)
-        tmp[i-pos] = pLine->buffer[i];
+        tmp[i-pos] = bm_flgetc(pLine, i);
 
     for(i=0; i<GAP_GROWING_SIZE; i++)
-        pLine->buffer[i+pos] = 0x00;
+        pLine->buffer[i+pos] = 0x00; /* [pos:2,gsize:4] = L=2, R=5 */
 
-    for(i=0; i<pos + GAP_GROWING_SIZE; i++)
+    for(i=0; i<wcslen(tmp); i++)
         pLine->buffer[i+pos+GAP_GROWING_SIZE] = tmp[i];
 
-    pLine->gap_right += GAP_GROWING_SIZE;
-    pLine->gap_size = pLine->gap_right-pLine->gap_left;
+    pLine->gap_right = pos + GAP_GROWING_SIZE -1;
+    pLine->gap_size = pLine->gap_right-pLine->gap_left+1;
 
     return TRUE;
 }
@@ -84,7 +85,7 @@ size_t bm_fllen(BUFFERLINE *pLine){
     size_t i = 0;
     while(i < pLine->size){
         c = pLine->buffer[i];
-        if(c == 0x00 && i > pLine->gap_right)
+        if(c == 0x00 && i > pLine->size)
             break;
         
         if(c != 0x00)
@@ -122,31 +123,32 @@ void bm_flmv(BUFFERLINE *pLine, size_t pos){
         bm_flmvr(pLine, pos);
 }
 
-int bm_flinsert(BUFFERLINE *pLine, wchar_t *sz_in, size_t pos){
-    size_t len;
+int bm_flinsert(BUFFERLINE *pLine, wchar_t *sz_in, const size_t pos){
+    size_t len, buflen;
     size_t i;
-    if(sz_in == NULL) return FALSE;
+    if(sz_in == NULL || pos < 0) return FALSE;
     len=wcslen(sz_in);
     i=0;
 
     if(pos != pLine->gap_left)
         bm_flmv(pLine, pos);
-
+    
+    buflen = bm_fllen(pLine);
     while(i < len){
-
         if(pLine->gap_right == pLine->gap_left){
-            if(pLine->size < (pLine->gap_right+GAP_GROWING_SIZE)){
+            if(pLine->size <= (buflen+GAP_GROWING_SIZE))
                 bm_flgrowbuf(pLine);
-            }
-            bm_flgrowgap(pLine, pos);
+            bm_flgrowgap(pLine, pLine->gap_left);
         }
-            
 
+        
         pLine->buffer[pLine->gap_left] = sz_in[i];
         pLine->gap_left++;
+        pLine->gap_size = pLine->gap_right - pLine->gap_left + 1;
         i++;
-        pos++;
+        buflen = bm_fllen(pLine);
     }
+    
     return TRUE;
 }
 
@@ -160,7 +162,7 @@ wchar_t bm_flgetc(BUFFERLINE *pLine, size_t pos){
 
     len = bm_fllen(pLine);
     pos = pLine->gap_right - pLine->gap_left + pos + 1;
-    if(pos > len)
+    if(pos >= pLine->size)
         return 0x00;
 
     return pLine->buffer[pos];
