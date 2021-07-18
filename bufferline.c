@@ -98,6 +98,9 @@ size_t bm_fllen(BUFFERLINE *pLine){
 
 /* Move left */
 void bm_flmvl(BUFFERLINE *pLine, size_t pos){
+    if(pos < 0) 
+        return;
+
     while(pos < pLine->gap_left){
         pLine->gap_left--;
         pLine->gap_right--;
@@ -108,6 +111,9 @@ void bm_flmvl(BUFFERLINE *pLine, size_t pos){
 
 /* Move right */
 void bm_flmvr(BUFFERLINE *pLine, size_t pos){
+    // Todo
+    // Check end of the line.
+
     while(pLine->gap_left < pos){
         pLine->gap_left++;
         pLine->gap_right++;
