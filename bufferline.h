@@ -11,6 +11,9 @@ typedef struct _BUFFERLINE {
     size_t gap_left;
     size_t gap_right;
     size_t size;
+
+    struct _BUFFERLINE *p_prev;
+    struct _BUFFERLINE *p_next;
 } BUFFERLINE;
 
 /* Make new instance */

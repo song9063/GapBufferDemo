@@ -22,6 +22,9 @@ BUFFERLINE *bm_flnew(void){
     pLine->gap_left = 0;
     pLine->gap_right = 1;
     pLine->size = 2;
+
+    pLine->p_prev = NULL;
+    pLine->p_next = NULL;
     
     return pLine;
 }
@@ -30,6 +33,18 @@ void bm_flfree(BUFFERLINE *pLine){
         free(pLine->buffer);
         pLine->buffer = NULL;
     }
+
+    if(pLine->p_prev != NULL)
+        pLine->p_prev->p_next = NULL;
+    
+    if(pLine->p_next != NULL){
+        pLine->p_next->p_prev = NULL;
+        if(pLine->p_prev != NULL){
+            pLine->p_prev->p_next = pLine->p_next;
+            pLine->p_next->p_prev = pLine->p_prev;
+        }
+    }
+
     free(pLine);
     pLine = NULL;
 }
@@ -141,7 +156,6 @@ int bm_flinsert(BUFFERLINE *pLine, wchar_t *sz_in, const size_t pos){
             bm_flgrowgap(pLine, pLine->gap_left);
         }
 
-        
         pLine->buffer[pLine->gap_left] = sz_in[i];
         pLine->gap_left++;
         pLine->gap_size = pLine->gap_right - pLine->gap_left + 1;
