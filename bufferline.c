@@ -96,6 +96,24 @@ size_t bm_fllen(BUFFERLINE *pLine){
     return len;
 }
 
+int bm_flhascl(BUFFERLINE *pLine){
+    size_t i;
+    if(pLine->gap_left == 0)
+        return FALSE;
+    for(i=pLine->gap_left-1; i>0; i--)
+        if(pLine->buffer[i] != 0x00)
+            return TRUE;
+    return FALSE;
+}
+
+int bm_flhascr(BUFFERLINE *pLine){
+    size_t i;
+    for(i=pLine->gap_right+1; i < pLine->size; i++)
+        if(pLine->buffer[i] != 0x00)
+            return TRUE;
+    return FALSE;
+}
+
 /* Move left */
 void bm_flmvl(BUFFERLINE *pLine, size_t pos){
     if(pos < 0) 
@@ -111,12 +129,12 @@ void bm_flmvl(BUFFERLINE *pLine, size_t pos){
 
 /* Move right */
 void bm_flmvr(BUFFERLINE *pLine, size_t pos){
-    // Todo
-    // Check end of the line.
-
     while(pLine->gap_left < pos){
         pLine->gap_left++;
         pLine->gap_right++;
+        if(pLine->gap_right >= pLine->size)
+            bm_flgrowbuf(pLine);
+        
         pLine->buffer[pLine->gap_left-1] = pLine->buffer[pLine->gap_right];
         pLine->buffer[pLine->gap_right] = 0x00;
     }
@@ -156,6 +174,26 @@ int bm_flinsert(BUFFERLINE *pLine, wchar_t *sz_in, const size_t pos){
     }
     
     return TRUE;
+}
+
+int bm_flrml(BUFFERLINE *pLine){
+    if(pLine->gap_left > 0){
+        pLine->gap_left--;
+        pLine->buffer[pLine->gap_left] = 0x00;
+        pLine->gap_size = pLine->gap_right - pLine->gap_left + 1;
+    }
+    return pLine->gap_left > 0;
+}
+
+int bm_flrmr(BUFFERLINE *pLine){
+    if(pLine->gap_right+1 < pLine->size){
+        if(pLine->buffer[pLine->gap_right+1] == 0x00)
+            return FALSE;
+        pLine->gap_right++;
+        pLine->buffer[pLine->gap_right] = 0x00;
+        pLine->gap_size = pLine->gap_right - pLine->gap_left + 1;
+    }
+    return (pLine->gap_right+1) < pLine->size;
 }
 
 wchar_t bm_flgetc(BUFFERLINE *pLine, size_t pos){

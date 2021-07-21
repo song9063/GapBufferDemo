@@ -18,6 +18,9 @@ int main(){
     bm_flinsert(pLine, L"Hello", 0);
     bm_fldump(pLine);
 
+    bm_flmv(pLine, 12);
+    bm_fldump(pLine);
+
     bm_flinsert(pLine, L"Busang", 5);
     bm_fldump(pLine);
 
@@ -42,7 +45,22 @@ int main(){
     i = bm_fllen(pLine);
     bm_flmv(pLine, i);
     bm_fldump(pLine);
+
     
+    printf("\n\n\nDelete all characters at left(Backspace action)\n");
+    bm_flmv(pLine, 6);
+    while(bm_flrml(pLine))
+        bm_fldump(pLine);
+    printf("\nDone?:\n");
+    bm_fldump(pLine);
+
+    printf("\n\n\nDelete all characters at right(Del key action)\n");
+    while(bm_flrmr(pLine))
+        bm_fldump(pLine);
+    printf("\nDone?:\n");
+    bm_fldump(pLine);
+    
+
     bm_flfree(pLine);
     return 0;
 }
